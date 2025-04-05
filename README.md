@@ -66,3 +66,6 @@ The Kubernetes configuration files (`k8s/deployment.yaml` and `k8s/service.yaml`
 
 License
 This project is licensed under the MIT License. See the LICENSE file for details.
+
+# Trigger deployment from clean slate
+# Trigger deployment from clean slate
