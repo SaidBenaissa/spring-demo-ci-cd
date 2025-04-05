@@ -11,7 +11,7 @@ spec:
     app: spring-demo
   ports:
     - name: http
-      port: 80          # Standard HTTP port externally
-      targetPort: 8080  # Your app's internal port
       protocol: TCP
-  externalTrafficPolicy: Local
+      port: 80           # Exposed service port (external)
+      targetPort: 8080   # Internal container port
+  externalTrafficPolicy: Cluster  # Change to "Local" if using real external traffic routing
