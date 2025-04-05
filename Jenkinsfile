@@ -7,12 +7,12 @@ pipeline {
   }
 
   environment {
-    DOCKER_REGISTRY = 'sbenaissa'                  // ✅ Explicit registry
+    DOCKER_REGISTRY = 'sbenaissa'
     APP_NAME = 'spring-demo'
     DOCKER_IMAGE = "${DOCKER_REGISTRY}/${APP_NAME}"
     KUBE_NAMESPACE = 'default'
-    KUBE_CONTEXT = 'minikube'                      // ✅ change if using docker-desktop
-    TAG = "${BUILD_ID}"                            // ✅ Immutable Docker tag
+    KUBE_CONTEXT = 'minikube'
+    TAG = "${BUILD_ID}"  // Use BUILD_ID for unique tag
   }
 
   stages {
@@ -29,7 +29,7 @@ pipeline {
           def commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
           echo "🔍 Commit Hash: ${env.COMMIT_HASH}"
           echo "📝 Commit Message: ${commitMessage}"
-          currentBuild.displayName = "#${TAG}-${env.COMMIT_HASH.take(7)}"
+          currentBuild.displayName = "#${env.TAG}-${env.COMMIT_HASH}"
         }
       }
     }
@@ -43,13 +43,15 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-        sh """
-          DOCKER_BUILDKIT=1 docker build \
-            -t ${DOCKER_IMAGE}:${TAG} \
-            -t ${DOCKER_IMAGE}:latest \
-            --label commit=${COMMIT_HASH} \
-            .
-        """
+        script {
+          sh """
+            DOCKER_BUILDKIT=1 docker build \\
+              -t ${DOCKER_IMAGE}:${TAG} \\
+              -t ${DOCKER_IMAGE}:latest \\
+              --label commit=${COMMIT_HASH} \\
+              .
+          """
+        }
       }
     }
 
@@ -84,6 +86,7 @@ pipeline {
       steps {
         script {
           sh "kubectl rollout status deployment/${APP_NAME} --timeout=300s"
+
           def pods = sh(script: "kubectl get pods -l app=${APP_NAME} -o jsonpath='{.items[*].status.phase}'", returnStdout: true).trim()
           echo "📦 Pod Status: ${pods}"
 
@@ -97,15 +100,11 @@ pipeline {
 
   post {
     success {
-      echo " Deployment successful! Tag: ${TAG}"
-      // Optional: Slack or webhook integration
-      // slackSend(color: 'good', message: "SUCCESS: ${APP_NAME} deployed (${TAG})")
+      echo "✅ Deployment successful! Tag: ${TAG}"
     }
     failure {
-      echo " Deployment failed!"
-      // Optional rollback
+      echo "❌ Deployment failed!"
       sh "kubectl rollout undo deployment/${APP_NAME} || true"
-      // slackSend(color: 'danger', message: "FAILED: ${APP_NAME} deployment (${TAG})")
     }
   }
 }
