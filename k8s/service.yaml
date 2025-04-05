@@ -2,11 +2,16 @@ apiVersion: v1
 kind: Service
 metadata:
   name: spring-service
+  labels:
+    app: spring-demo
+    tier: backend
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: spring-demo
   ports:
-    - port: 8080
-      targetPort: 8080
-      nodePort: 30080
+    - name: http
+      port: 80          # Standard HTTP port externally
+      targetPort: 8080  # Your app's internal port
+      protocol: TCP
+  externalTrafficPolicy: Local
