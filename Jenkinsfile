@@ -59,7 +59,7 @@ pipeline {
             steps {
                 sh """
                     kubectl config use-context $KUBE_CONTEXT
-                    kubectl set image deployment/springboot-demo springboot-demo=$DOCKER_IMAGE:$BUILD_NUMBER
+                    kubectl set image deployment/spring-demo spring-demo=$DOCKER_IMAGE:$BUILD_NUMBER --record
                 """
             }
         }
