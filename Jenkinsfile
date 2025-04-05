@@ -37,17 +37,17 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-        sh 'docker build -t $DOCKER_IMAGE:$BUILD_NUMBER .'
+        sh "docker build -t ${DOCKER_IMAGE}:${BUILD_NUMBER} ."
       }
     }
 
     stage('Push to Docker Hub') {
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-          sh '''
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker push $DOCKER_IMAGE:$BUILD_NUMBER
-          '''
+          sh """
+            echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
+            docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
+          """
         }
       }
     }
@@ -55,8 +55,8 @@ pipeline {
     stage('Deploy to Kubernetes') {
       steps {
         sh """
-          kubectl config use-context $KUBE_CONTEXT
-          sed 's|__TAG__|$BUILD_NUMBER|' k8s/deployment.yaml | kubectl apply -f -
+          kubectl config use-context ${KUBE_CONTEXT}
+          sed 's|__TAG__|${BUILD_NUMBER}|' k8s/deployment.yaml | kubectl apply -f -
           kubectl apply -f k8s/service.yaml
         """
       }

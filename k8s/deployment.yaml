@@ -2,11 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: spring-demo
+  labels:
+    app: spring-demo
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: spring-demo 
+      app: spring-demo
   template:
     metadata:
       labels:
@@ -14,7 +16,7 @@ spec:
     spec:
       containers:
         - name: spring-demo
-          image: sbenaissa/spring-demo:__TAG__
+          image: sbenaissa/spring-demo:${TAG}  # Replace ${TAG} during pipeline deployment
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
