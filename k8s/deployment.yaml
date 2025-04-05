@@ -2,10 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: spring-demo
+  namespace: default  # Explicit namespace (match Jenkins pipeline)
   labels:
     app: spring-demo
+    tier: backend  # Additional label for better filtering
 spec:
   replicas: 1
+  revisionHistoryLimit: 3  # Keep last 3 revisions for rollbacks
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1       # Allow 1 extra pod during update
+      maxUnavailable: 0  # Ensure zero downtime
   selector:
     matchLabels:
       app: spring-demo
@@ -13,13 +21,31 @@ spec:
     metadata:
       labels:
         app: spring-demo
+        version: "v1"  # Track versions (updated by Jenkins)
     spec:
       containers:
         - name: spring-demo
-          image: sbenaissa/spring-demo:__TAG__  # <-- Use __TAG__ for Jenkins substitution
+          image: sbenaissa/spring-demo:__TAG__  # Jenkins replaces this
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
+              name: http
+              protocol: TCP
+          # Health Checks (Critical for Kubernetes)
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness  # Spring Boot Actuator path
+              port: 8080
+            initialDelaySeconds: 30  # Wait for app startup
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 5
+          # Resource Management
           resources:
             limits:
               memory: "512Mi"
@@ -27,3 +53,13 @@ spec:
             requests:
               memory: "256Mi"
               cpu: "250m"
+          # Security Context (Least Privilege)
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+      # Pod-Level Security
+      securityContext:
+        fsGroup: 1000  # Non-root user group
+      restartPolicy: Always  # Default but explicit
