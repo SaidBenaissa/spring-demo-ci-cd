@@ -55,6 +55,7 @@ Then, you can access Jenkins at `http://localhost:8090` and use the default cred
 4. In the "Payload URL" field, enter the URL of your Jenkins server followed by `/github-webhook/`. For example: `http://your-jenkins-server/github-webhook/`.
 5. In the "Content type" dropdown, select "application/json".
 6. To get Payload URL, use ssh -R 80:localhost:8090 serveo.net to expose your localhost jenkins server to the internet.
+
 ```bash
 ssh -R 80:localhost:8090 serveo.net
 ```
