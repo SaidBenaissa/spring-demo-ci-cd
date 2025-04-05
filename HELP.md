@@ -30,6 +30,19 @@ docker run -d \
   jenkins/jenkins:lts
 
 ```
+Vs
+
+```bash
+docker rm -f jenkins
+docker run -d \
+  --name jenkins \
+  -p 8090:8080 -p 50000:50000 \
+  -v jenkins_data:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v $HOME/.kube/config:/root/.kube/config:ro \
+  -u 0 \
+  jenkins/jenkins:lts
+```
 
 Or start existing Jenkins instance with the following command:
 
