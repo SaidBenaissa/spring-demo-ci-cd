@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: spring-demo
-          image: sbenaissa/spring-demo:latest 
+          image: sbenaissa/spring-demo:__TAG__
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

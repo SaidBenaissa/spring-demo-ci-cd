@@ -8,7 +8,7 @@ pipeline {
 
   environment {
     DOCKER_IMAGE = 'sbenaissa/spring-demo'
-    KUBE_CONTEXT = 'minikube'  // or 'docker-desktop'
+    KUBE_CONTEXT = 'minikube' // or 'docker-desktop'
   }
 
   stages {
@@ -56,7 +56,8 @@ pipeline {
       steps {
         sh """
           kubectl config use-context $KUBE_CONTEXT
-          kubectl set image deployment/spring-demo spring-demo=$DOCKER_IMAGE:$BUILD_NUMBER
+          sed 's|__TAG__|$BUILD_NUMBER|' k8s/deployment.yaml | kubectl apply -f -
+          kubectl apply -f k8s/service.yaml
         """
       }
     }
