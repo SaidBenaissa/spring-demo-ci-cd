@@ -97,12 +97,12 @@ pipeline {
 
   post {
     success {
-      echo "✅ Deployment successful! Tag: ${TAG}"
+      echo " Deployment successful! Tag: ${TAG}"
       // Optional: Slack or webhook integration
       // slackSend(color: 'good', message: "SUCCESS: ${APP_NAME} deployed (${TAG})")
     }
     failure {
-      echo "❌ Deployment failed!"
+      echo " Deployment failed!"
       // Optional rollback
       sh "kubectl rollout undo deployment/${APP_NAME} || true"
       // slackSend(color: 'danger', message: "FAILED: ${APP_NAME} deployment (${TAG})")
