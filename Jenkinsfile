@@ -23,8 +23,8 @@ pipeline {
         script {
           def commitHash = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
           def commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
-          echo "Commit Hash: ${commitHash}"
-          echo "Commit Message: ${commitMessage}"
+          echo "🔍 Commit Hash: ${commitHash}"
+          echo "📝 Commit Message: ${commitMessage}"
         }
       }
     }
@@ -65,6 +65,7 @@ pipeline {
     stage('Confirm Rollout') {
       steps {
         sh "kubectl rollout status deployment/spring-demo"
+        sh "kubectl get pods -l app=spring-demo"
       }
     }
   }
