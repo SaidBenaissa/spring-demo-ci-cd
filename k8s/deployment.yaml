@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: spring-demo
-  namespace: default  # Must match Jenkins KUBE_NAMESPACE
+  namespace: default  # Make sure this matches your Jenkins pipeline config
   labels:
     app: spring-demo
     tier: backend
@@ -21,11 +21,11 @@ spec:
     metadata:
       labels:
         app: spring-demo
-        version: "__TAG__"  # Optional version tracking (can be replaced too)
+        version: "__TAG__"  # Jenkins replaces this with ${BUILD_ID} or similar
     spec:
       containers:
         - name: spring-demo
-          image: sbenaissa/spring-demo:__TAG__  # Jenkins will replace __TAG__
+          image: sbenaissa/spring-demo:__TAG__  # Replaced dynamically by Jenkins
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -58,4 +58,3 @@ spec:
               drop: ["ALL"]
       securityContext:
         fsGroup: 1000
-      restartPolicy: Always
