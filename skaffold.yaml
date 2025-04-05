@@ -1,0 +1,22 @@
+apiVersion: skaffold/v4beta6
+kind: Config
+metadata:
+  name: spring-demo
+build:
+  artifacts:
+    - image: spring-demo
+      context: .
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: target/*.jar
+            dest: .
+  local:
+    push: false
+manifests:
+  rawYaml:
+    - deployment.yaml
+    - service.yaml
+deploy:
+  kubectl: {}
