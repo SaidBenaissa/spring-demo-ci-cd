@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: spring-demo
-          image: sbenaissa/spring-demo:${TAG}  # Replace ${TAG} during pipeline deployment
+          image: sbenaissa/spring-demo:__TAG__  # <-- Use __TAG__ for Jenkins substitution
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
