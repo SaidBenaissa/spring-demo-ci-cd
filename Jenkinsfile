@@ -46,7 +46,6 @@ pipeline {
         sh """
           DOCKER_BUILDKIT=1 docker build \
             -t ${DOCKER_IMAGE}:${TAG} \
-            -t ${DOCKER_IMAGE}:latest \
             --label commit=${COMMIT_HASH} \
             .
         """
