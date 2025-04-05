@@ -1,4 +1,3 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,7 +14,7 @@ spec:
     spec:
       containers:
         - name: spring-demo
-          image: spring-demo:latest
+          image: sbenaissa/spring-demo:latest 
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
