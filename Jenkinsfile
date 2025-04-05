@@ -12,7 +12,7 @@ pipeline {
     DOCKER_IMAGE = "${DOCKER_REGISTRY}/${APP_NAME}"
     KUBE_NAMESPACE = 'default'
     KUBE_CONTEXT = 'minikube'
-    TAG = "${BUILD_ID}"  // Use BUILD_ID for unique image tag
+    TAG = "${BUILD_ID}"
   }
 
   stages {
@@ -43,15 +43,13 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-        script {
-          sh """
-            DOCKER_BUILDKIT=1 docker build \\
-              -t ${DOCKER_IMAGE}:${TAG} \\
-              -t ${DOCKER_IMAGE}:latest \\
-              --label commit=${COMMIT_HASH} \\
-              .
-          """
-        }
+        sh """
+          DOCKER_BUILDKIT=1 docker build \
+            -t ${DOCKER_IMAGE}:${TAG} \
+            -t ${DOCKER_IMAGE}:latest \
+            --label commit=${COMMIT_HASH} \
+            .
+        """
       }
     }
 
@@ -73,15 +71,13 @@ pipeline {
 
     stage('Deploy to Kubernetes') {
       steps {
-        script {
-          sh """
-            kubectl config use-context ${KUBE_CONTEXT}
-            kubectl config set-context --current --namespace=${KUBE_NAMESPACE}
-            sed 's|__TAG__|${TAG}|g' k8s/deployment.yaml | tee k8s/rendered-deployment.yaml
-            kubectl apply -f k8s/rendered-deployment.yaml
-            kubectl apply -f k8s/service.yaml
-          """
-        }
+        sh """
+          kubectl config use-context ${KUBE_CONTEXT}
+          kubectl config set-context --current --namespace=${KUBE_NAMESPACE}
+          sed 's|__TAG__|${TAG}|g' k8s/deployment.yaml > k8s/rendered-deployment.yaml
+          kubectl apply -f k8s/rendered-deployment.yaml
+          kubectl apply -f k8s/service.yaml
+        """
       }
     }
 
