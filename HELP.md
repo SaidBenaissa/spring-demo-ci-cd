@@ -19,18 +19,33 @@ To run the project locally, you need to have a local Jenkins instance running.
 You can use the following command to run the project locally:
 
 ```bash
+docker rm -f jenkins
+
 docker run -d \
   --name jenkins \
   -p 8090:8080 -p 50000:50000 \
   -v jenkins_data:/var/jenkins_home \
   -v /var/run/docker.sock:/var/run/docker.sock \
+  -u 0 \
   jenkins/jenkins:lts
+
+```
 
 Or start existing Jenkins instance with the following command:
 
 ```bash
 docker start jenkins
 ```
+# check if Jenkins is running
+```bash
+docker ps
+```
+# check if Jenkins is running
+```bash
+docker logs jenkins
+```
+
+
 Then, you can access Jenkins at `http://localhost:8090` and use the default credentials (admin/admin) to log in.
 
 # To set GitHub webhook for Jenkins
@@ -40,6 +55,9 @@ Then, you can access Jenkins at `http://localhost:8090` and use the default cred
 4. In the "Payload URL" field, enter the URL of your Jenkins server followed by `/github-webhook/`. For example: `http://your-jenkins-server/github-webhook/`.
 5. In the "Content type" dropdown, select "application/json".
 6. To get Payload URL, use ssh -R 80:localhost:8090 serveo.net to expose your localhost jenkins server to the internet.
+```bash
+ssh -R 80:localhost:8090 serveo.net
+```
 7. In the "Which events would you like to trigger this webhook?" section, select "Just the push event".
 8. Make sure the "Active" checkbox is checked.
 9. Click the "Add webhook" button to save the webhook.
