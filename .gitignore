@@ -31,3 +31,10 @@ skaffold.log
 
 # === DOCKER ===
 **/.dockerignore
+
+# Ignore Jenkins backup directory
+jenkins_backup
+
+# Other ignored files and directories
+target/
+*.log
