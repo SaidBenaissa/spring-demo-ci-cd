@@ -1,0 +1,33 @@
+# === MAVEN ===
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# === OS FILES ===
+.DS_Store
+Thumbs.db
+
+# === IDE CONFIGS ===
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# === LOGS & REPORTS ===
+*.log
+logs/
+*.tmp
+
+# === KUBERNETES & SKAFFOLD ===
+.kube/
+skaffold.log
+
+# === ENV FILES ===
+.env
+
+# === BACKUPS & JUNK ===
+*.bak
+*.orig
+
+# === DOCKER ===
+**/.dockerignore
