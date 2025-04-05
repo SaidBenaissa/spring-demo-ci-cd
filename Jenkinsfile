@@ -12,7 +12,7 @@ pipeline {
     DOCKER_IMAGE = "${DOCKER_REGISTRY}/${APP_NAME}"
     KUBE_NAMESPACE = 'default'
     KUBE_CONTEXT = 'minikube'
-    TAG = "${BUILD_ID}"  // Use BUILD_ID for unique tag
+    TAG = "${BUILD_ID}"  // Use BUILD_ID for unique image tag
   }
 
   stages {
@@ -73,12 +73,15 @@ pipeline {
 
     stage('Deploy to Kubernetes') {
       steps {
-        sh """
-          kubectl config use-context ${KUBE_CONTEXT}
-          kubectl config set-context --current --namespace=${KUBE_NAMESPACE}
-          sed 's|__TAG__|${TAG}|g' k8s/deployment.yaml | kubectl apply -f -
-          kubectl apply -f k8s/service.yaml
-        """
+        script {
+          sh """
+            kubectl config use-context ${KUBE_CONTEXT}
+            kubectl config set-context --current --namespace=${KUBE_NAMESPACE}
+            sed 's|__TAG__|${TAG}|g' k8s/deployment.yaml | tee k8s/rendered-deployment.yaml
+            kubectl apply -f k8s/rendered-deployment.yaml
+            kubectl apply -f k8s/service.yaml
+          """
+        }
       }
     }
 
@@ -104,7 +107,9 @@ pipeline {
     }
     failure {
       echo "❌ Deployment failed!"
-      sh "kubectl rollout undo deployment/${APP_NAME} || true"
+      script {
+        sh "kubectl rollout undo deployment/${APP_NAME} || true"
+      }
     }
   }
 }
