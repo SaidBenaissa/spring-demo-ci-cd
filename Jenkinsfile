@@ -18,6 +18,17 @@ pipeline {
       }
     }
 
+    stage('Print Commit Details') {
+      steps {
+        script {
+          // Retrieve the commit message of the latest commit
+          def commitMessage = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
+          // Display the commit message in the Jenkins log
+          echo "Commit Message: ${commitMessage}"
+        }
+      }
+    }
+
     stage('Build Spring Boot App') {
       steps {
         sh 'mvn clean package -DskipTests'
